@@ -9,7 +9,6 @@ An official **Model Context Protocol (MCP)** server for dynamically analyzing Gl
 - **Visual Dashboards:** The AI creates completely interactive, localized HTML graphing dashboards on demand.
 
 ## 🏗️ System Architecture 
-*(You can copy this Mermaid schema over into Draw.io or securely view it natively inside Markdown viewers)*
 ```mermaid
 graph TD
     User([👤 End User])
