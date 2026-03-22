@@ -8,6 +8,42 @@ An official **Model Context Protocol (MCP)** server for dynamically analyzing Gl
   - ⚠️ **CRITICAL WARNING:** Do **not** use the "Add Context" button (or drag-and-drop) to upload huge BhavData CSVs directly into your chat. This will instantly blow up your AI's token limits and cost a fortune. Instead, simply paste the *absolute file path* (e.g., `"Analyze C:\downloads\bhav.csv"`) as normal text in your prompt, and let this MCP server securely query it in the background!
 - **Visual Dashboards:** The AI creates completely interactive, localized HTML graphing dashboards on demand.
 
+## 🏗️ System Architecture 
+*(You can copy this Mermaid schema over into Draw.io or securely view it natively inside Markdown viewers)*
+```mermaid
+graph TD
+    User([👤 End User])
+    LLM_Client[🧠 AI Client / IDE <br> e.g., Cline, Claude, Ollama]
+
+    subgraph "Python MCP Server (.venv)"
+        Server[🔌 server.py <br> FastMCP Entrypoint]
+        GlobalMod[🌍 global_stocks.py <br> yfinance API]
+        BhavMod[📁 bhavdata_analyzer.py <br> SQLite & Pandas]
+        DashMod[📈 dashboard_generator.py <br> Chart.js & HTML]
+    end
+
+    subgraph "External Providers"
+        YFinance[(Yahoo Finance API)]
+        LocalDisk[(User's Local C: Drive <br> .csv files)]
+        CDN[(Chart.js CDN)]
+    end
+
+    User -->|Sends Prompt & Files| LLM_Client
+    LLM_Client -->|Calls JSON Tools via stdio| Server
+    
+    Server -->|Routes query| GlobalMod
+    Server -->|Routes query| BhavMod
+    Server -->|Routes query| DashMod
+
+    GlobalMod <-->|Fetches real-time/historical data| YFinance
+    BhavMod <-->|Loads/Runs SQL on| LocalDisk
+    DashMod -->|Embeds| CDN
+    DashMod -->|Outputs temp HTML file to| LocalDisk
+    
+    Server -.->|Returns result context| LLM_Client
+    LLM_Client -.->|Streams final answer to| User
+```
+
 ---
 
 ## 🛠️ Installation & Quick Setup
